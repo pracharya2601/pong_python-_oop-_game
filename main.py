@@ -1,6 +1,7 @@
 from turtle import Turtle, Screen
 from paddle import Paddle
 from ball import Ball
+from score import Score
 
 import time
 
@@ -14,6 +15,7 @@ _s.tracer(0)
 _r_p = Paddle((450, 0))
 _l_p = Paddle((-450, 0))
 _ball = Ball()
+_scoreboard = Score()
 
 _s.listen()
 _s.onkey(_r_p.go_up, 'Up')
@@ -22,9 +24,12 @@ _s.onkey(_r_p.go_down, 'Down')
 _s.onkey(_l_p.go_up, 'w')
 _s.onkey(_l_p.go_down, 's')
 
+_s.onkey(_ball.increase_speed, 'u')
+_s.onkey(_ball.decrease_speed, 'd')
+
 game_on = True
 while game_on:
-    time.sleep(0.1)
+    time.sleep(_ball.ball_speed)
     _s.update()
     _ball.move()
 
@@ -42,9 +47,17 @@ while game_on:
     if _ball.xcor() > 460:
         # right side lose the ball
         _ball.reset_pos()
+        _scoreboard.l_point()
 
     if _ball.xcor() < -460:
         # left side lose the ball
         _ball.reset_pos()
+        _scoreboard.r_point()
+
+    # check the total round count
+    if _scoreboard.l_score > 10 or _scoreboard.r_score > 10:
+        _ball.reset_pos()
+        game_on = False
+        _scoreboard.game_over()
 
 _s.exitonclick()
